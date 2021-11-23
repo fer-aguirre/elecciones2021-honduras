@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Environment
+/env*
+
+# Folders
+/output
+
+# Oauth keys
+oauth_keys.py
