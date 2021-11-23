@@ -1,7 +1,12 @@
 import pandas as pd
+import numpy as np
 import re
 import datetime
-import numpy as np
+import os
+from oauth_keys import *
+#!pip install botometer
+import botometer
+
 
 # Read 'csv' file as dataframe
 df = pd.read_csv("output/NoVolveran.csv", index_col=None)
@@ -29,6 +34,40 @@ df['Suspicious_account'] = np.where(df['Username'].isin(usernames_filtered), Tru
 # Save dataframe as 'csv' file
 df.to_csv('output/NoVolveran_processed.csv', index=False)
 
-# Filter data posted by a suspicious account
-# suspicious_accounts = df.loc[df['Username'].isin(usernames_filtered)]
-# suspicious_accounts
+# Import Rapidapi key from environment variable
+rapidapi_key = os.environ['RAPIDAPI_KEY']
+
+# Import Twitter Oauth keys from file
+twitter_app_auth =  {
+    'consumer_key': TOKENS.get('consumer_key'),
+    'consumer_secret': TOKENS.get('consumer_secret'),
+    'access_key': TOKENS.get('access_key'),
+    'access_secret': TOKENS.get('access_secret')}
+
+# Create an object for botometer
+botometer = botometer.Botometer(mashape_key=rapidapi_key, wait_on_ratelimit=True, **twitter_app_auth)
+
+# Evaluate accounts from list
+results = []
+for username, bot_score in botometer.check_accounts_in(usernames_filtered):
+    results.append({username: bot_score})
+len(results)
+results
+
+########## CREATE COPY
+# Get all evaluations on a list
+evaluations = []
+for i in range(len(results)):
+    evaluations.append(results[i].get(usernames_filtered[i]))
+evaluations
+
+# Get cap evaluation on a list
+cap = []
+for i in range(len(evaluations)):
+    cap.append(evaluations[i].get('cap'))
+cap
+
+# Convert list to dataframe
+df = pd.DataFrame(cap)
+# Save dataframe as 'csv' file
+df.to_csv('output/bot_evaluation.csv', index=False)
