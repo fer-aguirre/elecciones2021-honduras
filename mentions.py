@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import re
 
+
 def main():
 
     # Oauth keys
@@ -41,6 +42,7 @@ def main():
     tweets_df.to_csv(f'output/{filename[0]}.csv', index = False)
     #Show how the file was saved
     print("File saved as: ", f'{filename[0]}.csv')
+
 
 if __name__ == "__main__":
     main()
