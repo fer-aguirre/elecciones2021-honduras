@@ -17,16 +17,15 @@ usernames = list(df['Username'])
 
 # Remove duplicates usernames
 usernames = [i for n, i in enumerate(usernames) if i not in usernames[:n]]
-sorted(usernames)
+len(usernames)
 
 # Filter usernames with a serie of numbers at the end (at least 5)
 usernames_filtered = list(map(lambda x: x[0], filter(None, map(lambda x: re.findall(r'(^.*\d{5})', x), usernames))))
-usernames_filtered
 len(usernames_filtered)
+usernames_filtered
 
 # Create a column with account creation year
-df['Account_creation_year'] = pd.to_datetime(df['Account_created_at'])
-df['Account_creation_year'] = df['Account_creation_year'].dt.year
+df['Account_creation_year'] = pd.to_datetime(df['Account_created_at']).dt.year
 df
 
 # Create a column with an account classification based on username filter
@@ -49,12 +48,12 @@ botometer = botometer.Botometer(mashape_key=rapidapi_key, wait_on_ratelimit=True
 
 # Evaluate accounts from list
 results = []
-for username, bot_score in botometer.check_accounts_in(usernames_filtered):
+for username, bot_score in botometer.check_accounts_in(usernames):
     results.append({username: bot_score})
 len(results)
 results
 
-########## CREATE COPY
+dict_copy = results[i].copy()
 # Get all evaluations on a list
 evaluations = []
 for i in range(len(results)):
