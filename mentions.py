@@ -3,6 +3,10 @@ import tweepy as tw
 import pandas as pd
 import numpy as np
 import re
+import requests
+import os
+# Import API token from environment variable
+token = os.environ['TOKEN']
 
 
 def main():
@@ -39,10 +43,37 @@ def main():
     # Define username on query as filename
     filename = re.findall(r'^@(.*)\s', query)
     # Save the dataframe as a csv file
-    tweets_df.to_csv(f'output/{filename[0]}.csv', index = False)
+    tweets_df.to_csv(f'output/{filename[0]}.csv', index=False)
     #Show how the file was saved
     print("File saved as: ", f'{filename[0]}.csv')
 
+    # Classify misogynistic text
+    df = pd.read_csv('output/XiomaraCastroZ.csv', index_col=None)
+    # Create a dataframe only with the text
+    text = df['Text']
+    text.to_csv('output/XiomaraCastroZ_text.csv', index=False)
+
+    # API endpoint
+    url_file = 'https://turing.iimas.unam.mx/pmdm/api/classify_file'
+    # API headers
+    headers = {'access-token': token}
+    # File to classify
+    files = {'uploaded_file': open('output/XiomaraCastroZ_text.csv', 'rb')}
+    # Tweet parameters
+    data = {
+        'use_lower': 'false',
+        'demojize': 'true',
+        'process_urls':'true',
+        'process_mentions': 'true',
+        'process_hashtags': 'true',
+        'process_emojis': 'false',
+        'process_smileys': 'false',
+        'process_numbers': 'false',
+        'process_escaped_chars': 'false'
+        }
+    # Analyze file
+    response_file = requests.post(url_file, headers=headers, files=files, data=data)
+    response_file.json()
 
 if __name__ == "__main__":
     main()
