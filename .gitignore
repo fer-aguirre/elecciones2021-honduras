@@ -10,3 +10,4 @@ __pycache__/
 
 # Oauth keys
 oauth_keys.py
+config.ini
