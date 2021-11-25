@@ -5,17 +5,20 @@ import numpy as np
 import re
 import requests
 import os
-# Import API token from environment variable
-token = os.environ['TOKEN']
+#!/usr/bin/python3 -m pip install configparser
+import configparser
 
 
 def main():
 
-    # Oauth keys
-    consumer_key = TOKENS.get('consumer_key')
-    consumer_secret = TOKENS.get('consumer_secret')
-    access_key = TOKENS.get('access_key')
-    access_secret = TOKENS.get('access_secret')
+    # Get API and Oauth keys
+    parser = configparser.ConfigParser()
+    parser.read("config.ini")
+    token = parser.get('api', 'pmdm')
+    consumer_key = parser.get('oauth keys', 'consumer_key')
+    consumer_secret = parser.get('oauth keys', 'consumer_secret')
+    access_key = parser.get('oauth keys', 'access_key')
+    access_secret = parser.get('oauth keys', 'access_secret')
 
     # Authentication with Twitter
     auth = tw.OAuthHandler(consumer_key, consumer_secret)
@@ -26,7 +29,7 @@ def main():
 
     # Define the search query
     query = '@XiomaraCastroZ -filter:retweets'
-
+    # Get tweets through pagination
     tweets_list = []
     for tweet in tw.Cursor(api.search, q=query, tweet_mode='extended', result_type='mixed', count=100).items():
         tweets_list.append((tweet.full_text, tweet.created_at, tweet.id_str, tweet.retweet_count, tweet.favorite_count, tweet.entities["hashtags"], tweet.lang, tweet.in_reply_to_status_id_str, tweet.in_reply_to_user_id_str, tweet.in_reply_to_screen_name, tweet.is_quote_status, tweet.user.screen_name, tweet.user.description, tweet.user.followers_count, tweet.user.verified, tweet.user.location, f"https://twitter.com/{tweet.user.screen_name}/status/{tweet.id}", f"https://twitter.com/user/status/{tweet.in_reply_to_status_id_str}"))
