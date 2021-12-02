@@ -13,3 +13,4 @@ oauth_keys.py
 
 # Config file
 config.ini
+.gitsecret/keys/random_seed
